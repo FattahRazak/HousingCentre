@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html 
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/main_layout}"
+	>	
+	
+<head>
+<meta charset="UTF-8">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+  <script src="../js/postrequest.js"></script>
+  <script src="../js/getrequest.js"></script>
+<title>Home</title>
+</head>
+<body onload="noBack();"
+    onpageshow="if (event.persisted) noBack();" onunload="">
+	<div layout:fragment="content" class="container mySpace">
+	
+		<div class="card">
+			<div class="card-body" >
+				<!-- <table class="table table-hover">
+				<thead>
+				    <tr>
+				      <th scope="col">Date</th>
+				      <th scope="col">StartTime</th>
+				      <th scope="col">StopTime</th>
+				      <th scope="col">Description</th>
+				    </tr>
+			  </thead>
+			   <tbody>
+				    <tr class="table-active" th:each="task:${tasks}">
+				      <td th:text="${task.date}">Column content</td>
+				      <td th:text="${task.startTime}">Column content</td>
+				      <td th:text="${task.stopTime}">Column content</td>
+				      <td th:text="${task.description}">Column content</td>		
+				    </tr>
+			  </tbody>
+			  
+				</table>
+			 -->
+			 
+			
+			 
+			 
+			 <div class="card mb-3">
+			 
+  <h3 class="card-header">
+  
+  
+<!--  <table border="1">
+	<th>ID</th>
+	<th>name</th>
+	<th>age</th>
+
+	<c:forEach items="${form}" var="form">
+			<tr  th:each ="Form : ${form}">
+		<td><a th:text="${Form.id}" th:href="|/form/${Form.id}|"></a></td>
+		<td th:text="${Form.name}"> </td>
+		<td th:text="${Form.age}"> </td>
+	
+		</tr>
+	</c:forEach>
+</table> -->
+
+  </h3>
+
+  <!--  <img style="height: 200px; width: 100%; display: block;" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22318%22%20height%3D%22180%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20318%20180%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_158bd1d28ef%20text%20%7B%20fill%3Argba(255%2C255%2C255%2C.75)%3Bfont-weight%3Anormal%3Bfont-family%3AHelvetica%2C%20monospace%3Bfont-size%3A16pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_158bd1d28ef%22%3E%3Crect%20width%3D%22318%22%20height%3D%22180%22%20fill%3D%22%23777%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%22129.359375%22%20y%3D%2297.35%22%3EImage%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E" alt="Card image">-->
+ Profile Picture
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item">Fullname:</li>
+    <li class="list-group-item">Age:</li>
+    <li class="list-group-item">IC Number:</li>
+  </ul>
+</div>
+
+			 
+			 
+			 
+			 
+			 <form>
+    		<h2>Guideline For Uploading Documents:</h2>
+      		<ul>
+  			<li>5 different type of Documents.</li>
+  			<li>All Documents must be in PDF format.</li>
+  			</ul>
+  			<ol>
+  			
+  			<li>Salinan Kad Pintar Pemohon dan Isteri / Suami. 
+  			<b>File name format: Salinan Kad Pintar Pemohon dan isteri.pdf</b></li>
+  			
+  			<li>Salinan Sijil Nikah / kahwin / Cerai.
+  			<b>File name format: Salinan Sijil Nikah.pdf</b>
+  			</li>
+  			
+  			<li>Surat Lantikan Bergaji Bulan / Bergaji Hari jika bekerja dengan Kerajaan.
+  			<b>File name format: Surat Lantikan Bergaji Bulan.pdf</b>
+  			</li>
+  			
+  			<li>Surat pengesahan bekerja daripada Majikan / firma jika bekerja dengan Swasta
+  			<b>File name format: Surat pengesahan bekerja daripada Majikan.pdf</b>
+  			</li>
+  			
+  			<li>Lesen Perniagaan bagi pemohon yang berniaga sendiri.
+  			<b>File name format: Lesen Perniagaan.pdf</b>
+  			</li>
+			</ol> 
+			 </form>
+			 
+			 <form method="POST" enctype="multipart/form-data" id="fileUploadForm">
+          <div class="form-group">
+            <label class="control-label" for="uploadfile">Upload File:</label>
+            <input type="file" class="form-control" id="uploadfile" placeholder="Upload File"  name="uploadfile"></input>
+          </div>
+          
+              <button type="submit" class="btn btn-default" id="btnSubmit">Upload</button>
+              <button type="button" class="btn btn-default" id="btnGetFiles">Files</button>
+        </form>
+			</div>
+			 <div id="listFiles">
+        </div>
+		</div>
+	</div>
+
+</body>
+</html>

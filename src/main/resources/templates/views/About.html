@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/main_layout}">
+<head>
+<style type="text/css">
+
+img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+
+
+.card-container {
+  cursor: pointer;
+  height: 400px;
+/*  perspective: 300px;*/
+  position: relative;
+  width: 600px;
+  margin: auto;
+
+
+}
+.card {
+  height: 100%;
+  position: absolute;
+  transform-style: preserve-3d;
+  transition: all 1s ease-in-out;
+  width: 100%;
+
+}
+.card:hover {
+  transform: rotateY(180deg);
+}
+.card .side {
+  backface-visibility: hidden;
+  border-radius: 6px;
+  /*height: 100%;*/
+  position: absolute;
+  overflow: hidden;
+  width: 100%;
+}
+.card .back {
+  background: #eaeaed;
+  color: #0087cc;
+  line-height: 50px;
+  text-align: center;
+  transform: rotateY(180deg);
+}
+
+</style>
+<meta charset="UTF-8">
+<title>about</title>
+
+</head>
+<body>
+
+<div> </div>
+<div layout:fragment="content" class="container mySpace">
+		<div class="jumbotron">
+		<a href="http://www.pb.edu.bn"><img alt="" src="../images/PB.png" align="center" ></a>
+<div class="card-container" >
+  <div class="card">
+    
+    <div class="side"><img src="../images/Housing centre.png" width="600px" height="400px"></div>
+    <div class="side back"><h1>Creator and Design</h1><p>MUHAMMAD NUR AIEEZZAT BIN AWANG RAHIMEEY [DiICT(NWS)/07/17/0453]</p> 	
+    <p>MUHAMMAD ASNAWI@FAUZI BIN HAJI MATNOR [DiICT(NWS)/07/17/0449]</p>
+    <p>MUHAMAD DANIAL ASYRAF BIN MOHAMAD [DiICT(NWS)/07/17/0448]</p>
+     <p>ABDUL FATTAH BIN ABDUL RAZAK [DiICT(NWS)/07/17/0437]</p></div>
+  </div>
+  
+
+</div>
+</div>
+		
+		
+	</div>
+</body>
+</html>

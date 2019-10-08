@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/main_layout}">
+<head>
+
+<script>
+function signatureCapture() {
+	  var canvas = document.getElementById("newSignature");
+	  var context = canvas.getContext("2d");
+	  canvas.width = 276;
+	  canvas.height = 180;
+	  context.fillStyle = "#fff";
+	  context.strokeStyle = "#444";
+	  context.lineWidth = 1.5;
+	  context.lineCap = "round";
+	  context.fillRect(0, 0, canvas.width, canvas.height);
+	  var disableSave = true;
+	  var pixels = [];
+	  var cpixels = [];
+	  var xyLast = {};
+	  var xyAddLast = {};
+	  var calculate = false;
+	  {   //functions
+	    function remove_event_listeners() {
+	      canvas.removeEventListener('mousemove', on_mousemove, false);
+	      canvas.removeEventListener('mouseup', on_mouseup, false);
+	      canvas.removeEventListener('touchmove', on_mousemove, false);
+	      canvas.removeEventListener('touchend', on_mouseup, false);
+
+	      document.body.removeEventListener('mouseup', on_mouseup, false);
+	      document.body.removeEventListener('touchend', on_mouseup, false);
+	    }
+
+	    function get_coords(e) {
+	      var x, y;
+
+	      if (e.changedTouches && e.changedTouches[0]) {
+	        var offsety = canvas.offsetTop || 0;
+	        var offsetx = canvas.offsetLeft || 0;
+
+	        x = e.changedTouches[0].pageX - offsetx;
+	        y = e.changedTouches[0].pageY - offsety;
+	      } else if (e.layerX || 0 == e.layerX) {
+	        x = e.layerX;
+	        y = e.layerY;
+	      } else if (e.offsetX || 0 == e.offsetX) {
+	        x = e.offsetX;
+	        y = e.offsetY;
+	      }
+
+	      return {
+	        x : x, y : y
+	      };
+	    };
+
+	    function on_mousedown(e) {
+	      e.preventDefault();
+	      e.stopPropagation();
+
+	      canvas.addEventListener('mouseup', on_mouseup, false);
+	      canvas.addEventListener('mousemove', on_mousemove, false);
+	      canvas.addEventListener('touchend', on_mouseup, false);
+	      canvas.addEventListener('touchmove', on_mousemove, false);
+	      document.body.addEventListener('mouseup', on_mouseup, false);
+	      document.body.addEventListener('touchend', on_mouseup, false);
+
+	      empty = false;
+	      var xy = get_coords(e);
+	      context.beginPath();
+	      pixels.push('moveStart');
+	      context.moveTo(xy.x, xy.y);
+	      pixels.push(xy.x, xy.y);
+	      xyLast = xy;
+	    };
+
+	    function on_mousemove(e, finish) {
+	      e.preventDefault();
+	      e.stopPropagation();
+
+	      var xy = get_coords(e);
+	      var xyAdd = {
+	        x : (xyLast.x + xy.x) / 2,
+	        y : (xyLast.y + xy.y) / 2
+	      };
+
+	      if (calculate) {
+	        var xLast = (xyAddLast.x + xyLast.x + xyAdd.x) / 3;
+	        var yLast = (xyAddLast.y + xyLast.y + xyAdd.y) / 3;
+	        pixels.push(xLast, yLast);
+	      } else {
+	        calculate = true;
+	      }
+
+	      context.quadraticCurveTo(xyLast.x, xyLast.y, xyAdd.x, xyAdd.y);
+	      pixels.push(xyAdd.x, xyAdd.y);
+	      context.stroke();
+	      context.beginPath();
+	      context.moveTo(xyAdd.x, xyAdd.y);
+	      xyAddLast = xyAdd;
+	      xyLast = xy;
+
+	    };
+
+	    function on_mouseup(e) {
+	      remove_event_listeners();
+	      disableSave = false;
+	      context.stroke();
+	      pixels.push('e');
+	      calculate = false;
+	    };
+	  }
+	  canvas.addEventListener('touchstart', on_mousedown, false);
+	  canvas.addEventListener('mousedown', on_mousedown, false);
+	}
+
+	function signatureSave() {
+	  var canvas = document.getElementById("newSignature");// save canvas image as data url (png format by default)
+	  var dataURL = canvas.toDataURL("image/png");
+	  document.getElementById("saveSignature").src = dataURL;
+	};
+
+	function signatureClear() {
+	  var canvas = document.getElementById("newSignature");
+	  var context = canvas.getContext("2d");
+	  context.clearRect(0, 0, canvas.width, canvas.height);
+	}</script> 
+	
+<style>
+ 
+
+input[type=text]:focus {
+  background-color: lightblue;
+}
+
+
+</style>
+<meta charset="ISO-8859-1">
+<title th:utext="${title}"></title>
+</head>
+<body>
+
+ <!-- Include _menu.html -->
+    <!--   <th:block th:include="/_menu"></th:block>  
+      
+      <h2>Message : <span th:utext="${message}"></span></h2>
+      
+      <iframe width="400" height="200"
+			src="https://www.youtube.com/embed/OcmfV934atQ" frameborder="0"
+			allow="autoplay; encrypted-media" allowfullscreen></iframe> 
+			<br>
+			<iframe src="https://calendar.google.com/calendar/embed?src=pb.edu.bn_dcriaiqk3g6r58dkv025pk87d8%40group.calendar.google.com&ctz=Asia%2FBrunei" 
+			style="border: 0" width="400" height="200" 
+			frameborder="0" scrolling="no"></iframe>
+     -->
+     <!--   
+      <form method = "GET" action = "/listOfWorker">
+         <table>
+            <tr>
+               <td>
+                  <input type = "submit" value = "listofworker"/>
+               </td>
+            </tr>
+         </table>  
+      </form>
+       -->
+       <h3>BORANG SKIM PERUMAHAN NEGARA</h3>
+<form action="/add/form" method="get" layout:fragment="content">
+  <table class = "table">
+<h3>BORANG SKIM PERUMAHAN NEGARA</h3>
+    <!----- First Name ---------------------------------------------------------->
+    <tr>
+      <td>NAMA PEMOHON</td>
+      <td><input type="text" name="1name" maxlength="30" required placeholder="Office Use Only" readonly/> 
+        <tr>
+          <td>NO. KAD PINTAR</td>
+          <td><input type="text" name="IC" pattern="(0|1){2}-[0-9}{6}]" placeholder="Office Use Only" readonly /> 
+          </td>
+        </tr>
+        
+         <tr>
+          <td>TARIKH MENGELUARKAN BORANG</td>
+          <td><input type="date" name="tarikh" placeholder="Office Use Only" readonly /> 
+          </td>
+        </tr>
+        
+         <tr>
+          <td>NAMA PEGAWAI YANG MENGELUARKAN</td>
+          <td><input type="text" name="Last_Name" maxlength="30" placeholder="Office Use Only" readonly /> 
+          </td>
+        </tr>
+        
+            <tr>
+          <td>TANDATANGAN PEGAWAI YANG MENGELUARKAN</td>
+          <td><input type="text" name="Last_Name" maxlength="30" placeholder="Office Use Only"  readonly/> 
+          </td>
+        </tr>
+        
+            <tr>
+          <td>TARIKH MENERIMA BORANG</td>
+          <td><input type="date" name="tarikh" placeholder="Office Use Only"  readonly/> 
+          </td>
+        </tr>
+        
+           <tr>
+          <td>NAMA PEGAWAI YANG MENERIMA</td>
+          <td><input type="text" name="Last_Name" maxlength="30" placeholder="Office Use Only" readonly/> 
+          </td>
+        </tr>
+        
+           <tr>
+          <td>TANDATANGAN PEGAWAI YANG MENERIMA</td>
+          <td><input type="text" name="Last_Name" maxlength="30" placeholder="Office Use Only" readonly/> 
+          </td>
+        </tr>
+        
+        
+         <td> <h3> BAHAGIAN 1 - KETERANGAN MENGENAI PEMOHON </h3> </td>
+           <tr>
+          
+          <td>1. Nama penuh (huruf besar seperti di dalam kad Pengenalan :</td>
+          <td><input type="text" name="name" id="name"  class="form-control" maxlength="100" required/> (max 100 characters a-z and A-Z)
+          </td>
+        </tr>
+        
+        <tr>
+          <td>2. Jantina:</td>
+          <td><input type="radio" name="gender" value="male" checked > Male<br>
+  <input type="radio" name="gender" value="female" > Female<br>
+          </td>
+        </tr>
+        
+           <tr>
+          <td>3. Umur:</td>
+          <td><input type="number"  min="18" max="60" name="age" id="age" required /> (Min 18 and max 60)
+          </td>
+        </tr>
+        
+           <tr>
+          <td>4. Tarikh Lahir :</td>
+          <td><input type="date" name="birthdate" min="1979-12-31" max="2000-01-02" id="birthdate" required>
+          </td>
+        </tr>
+        
+         <tr>
+          <td>5. Tempat Lahir :</td>
+          <td><input type="text" name="placeofbirth" maxlength="100" id="placeofbirth" required /> (max 100 characters a-z and A-Z)
+          </td>
+        </tr>
+        
+          <tr>
+          <td>6. Bilangan Kad Pengenalan :</td>
+          <td><input type="text" name="IC" pattern="[0-1]{2}-[0-9]{6}"  id="IC" required /> (00-000000)
+          </td>
+        </tr>
+        
+          <tr>
+          <td>7. Warna :</td>
+          <td><input type="text" name="ICcolor" maxlength="30" id="ICcolor"  required/> (max 30 characters a-z and A-Z)
+          </td>
+        </tr>
+        
+         <tr>
+          <td>8. Taraf Kelamin :</td>
+          <td><input type="radio" name="martialstatus" value="kahwin" checked > Kahwin<br>
+  <input type="radio" name="martialstatus" value="balu" > Balu<br>
+  <input type="radio" name="martialstatus" value="janda" checked > Janda<br>
+  <input type="radio" name="martialstatus" value="bujang" > Bujang<br>
+    <input type="radio" name="martialstatus" value="duda" > Duda<br> 
+          </td>
+        </tr>
+        
+         <tr>
+          <td>9 . Bangsa :</td>
+          <td><input type="text" name="nationality" maxlength="30" id="nationality"  required /> (max 30 characters a-z and A-Z)
+          </td>
+        </tr>
+        
+         <tr>
+          <td>10. Alamat :</td>
+          <td><input type="text" name="address" maxlength="100" id="address" required /> (max 100 characters a-z and A-Z)
+          </td>
+        </tr>
+        
+        <tr>
+          <td>10a. Alamat persuratan/tetap yang mudah dihubungi</td>
+          <td><input type="text" name="address2" id="address2" maxlength="100" required /> (max 100 characters a-z and A-Z)
+          </td>
+        </tr>
+        
+        <tr>
+          <td>Nombor Telefon :</td>
+          <td><input type="tel" name="phonenumber" pattern="+[0-9]{3}-[0-9]{7}" id="phonenumber" required /> Format: +123-4567891
+          </td>
+        </tr>
+        
+        
+         <tr>
+          <td>10b. Alamat tempat tinggal sekarang</td>
+          <td><input type="text" name="address3" id="address3" maxlength="100" required /> (max 100 characters a-z and A-Z)
+          </td>
+        </tr>
+        
+         <tr>
+          <td>10c. Tinggal dirumah :</td>
+        
+        </tr>
+        
+            <tr>
+          <td>10c ( i ) Sendiri: <input type="checkbox" name="sendiri" value="sendiri" > </td>
+          <td> (Sila tandai di bawah)<br>
+          <input type="checkbox" name="sendiri" value="Tanah T.O.L"> Tanah T.O.L<br>
+  <input type="checkbox" name="sendiri" value="Kampong Ayer"> Kampong Ayer <br>
+  <input type="checkbox" name="sendiri" value="rumah kerajaan"> Rumah Kerajaan<br>
+  <input type="checkbox" name="sendiri" value="Menyewa Rumah"> Menyewa Rumah <br>
+       Bayaran Sewa Sebulan: <input type="text" name="Last_Name" maxlength="30" />   
+          </td>
+         
+        </tr>
+        
+            <tr>
+          <td>10c (ii) Menumpang <input type="checkbox" name="menumpang" id="menumpang" value="menumpang"></td>
+          <td> (Sila tandai di bawah)<br>
+          <input type="checkbox" name="menumpang" id="menumpang" value="Ibu/bapa"> Ibu/bapa<br>
+  <input type="checkbox" name="menumpang" id="menumpang" value="Mertua"> Mertua <br>
+  <input type="checkbox" name="menumpang"  id="menumpang"value="Saudara"> Saudara<br>
+      Lain-lain: <input type="menumpang" id="menumpang" name="Last_Name" maxlength="30" />   
+        </tr>
+        
+          <tr>
+          <td>11. Perkhidmatan :</td>
+          
+        </tr>
+        
+         <tr>
+          <td>11a. Kerajaan : <input type="checkbox" name="kerajaan" value="kerajaan" ></td>
+          <td><input type="text" name="kerajaan" id="kerajaan" maxlength="100" /> (max 100 characters a-z and A-Z)
+          </td>
+        </tr>
+        
+        <tr>
+          <td>Majikan :</td>
+          <td><input type="text" name="majikan" id="majikan" maxlength="100" /> (max 100 characters a-z and A-Z)
+          </td>
+        </tr>
+        
+        <tr>
+          <td>Jawatan :</td>
+          <td><input type="text" name="jawatan" id="jawatan" maxlength="100"  /> (max 100 characters a-z and A-Z)
+          </td>
+        </tr>
+        
+        <tr>
+          <td>Bahagian :</td>
+          <td><input type="radio" name="bahagian" id="bahagian" value="2" checked> II<br>
+  <input type="radio" name="bahagian" id="bahagian" value="3"> III<br>
+  <input type="radio" name="bahagian" id="bahagian" value="4"> IV <br>
+  <input type="radio" name="bahagian" id="bahagian" value="5"> V <br>
+          </td>
+        </tr>
+        
+        <tr>
+          <td>Bahagian (Section) :</td>
+          <td><input type="text" name="bahagian2" id="bahagian2" maxlength="100" /> (max 100 characters a-z and A-Z)
+          </td>
+        </tr>
+        
+        <tr>
+          <td>Tarikh mula berkhidmat :</td>
+          <td><input type="date" name="berkhidmatdate" id="berkhidmatdate"> 
+          </td>
+        </tr>
+        
+           <tr>
+          <td>Gaji sebulan/sehari :</td>
+          <td><input type="number" name="gaji" id="gaji" min="1" /> (Min 1)
+          </td>
+        </tr>
+        
+           <tr>
+          <td>11b. Swasta : <input type="checkbox" name="swasta" id="swasta" value="swasta"></td>
+          <td><input type="text" name="swasta" id="swasta" maxlength="100" /> (max 100 characters a-z and A-Z)
+          </td>
+        </tr>
+        
+        <tr>
+          <td>Majikan :</td>
+          <td><input type="text" name="majikan2" id="majikan2" maxlength="100" /> (max 100 characters a-z and A-Z)
+          </td>
+        </tr>
+        
+        <tr>
+          <td>Jawatan :</td>
+          <td><input type="text" name="jawatan2" id="jawatan2" maxlength="100" /> (max 100 characters a-z and A-Z)
+          </td>
+        </tr>
+        
+        <tr>
+          <td>Tarikh mula berkhidmat :</td>
+          <td><input type="date" name="berkhidmatdate2" id="berkhidmatdate2"> 
+          </td>
+        </tr>
+        
+           <tr>
+          <td>Gaji sebulan/sehari :</td>
+          <td><input type="number" name="gaji2" id="gaji2" min="1" /> (Min 1)
+          </td>
+        </tr>
+        
+         <tr>
+          <td>11c. Sendiri : <input type="checkbox" name="kerjasendiri" id="kerjasendiri" value="sendiri"></td>
+          <td><input type="text" name="kerjasendiri" id="kerjasendiri" maxlength="100" /> (max 100 characters a-z and A-Z)
+          </td>
+        </tr>
+        
+        <tr>
+          <td>Jenis Pekerjaan :</td>
+          <td><input type="text" name="pekerjaan" id="pekerjaan" maxlength="100" /> (max 100 characters a-z and A-Z)
+          </td>
+        </tr>
+        
+        <tr>
+          <td>Anggaran pendapatan purata sebulan :</td>
+          <td><input type="number" name="gaji3" id="gaji3" min="1" /> (max 100 characters a-z and A-Z)
+          </td>
+        </tr>
+        
+          <tr>
+          <td>11d. Lain-Lain : <input type="checkbox" name="lainlain" id="lainlain" value="lainlain"></td>
+          <td><input type="text" name="lainlain" id="lainlain" maxlength="100" /> (max 100 characters a-z and A-Z)
+          </td>
+        </tr>
+        
+          <tr>
+          <td>Jawatan:</td>
+          <td><input type="text" name="jawatan3" id="jawatan3" maxlength="100" /> (max 100 characters a-z and A-Z)
+          </td>
+        </tr>
+        
+        
+          <tr>
+          <td>Pendapatan sebulan (anggaran purata)</td>
+          <td><input type="number" name="gaji4" id="gaji4" min="1" /> (Min 1)
+          </td>
+        </tr>
+        
+          <tr>
+          <td>12. Daerah Kawasan Rancangan Perumahan Negara yang dipohonkan :</td>
+          <td><input type="checkbox" name="kawasan" id="kawasan" value="brunei dan Muara"> Daerah Brunei dan Muara<br>
+  <input type="checkbox" name="kawasan" id="kawasan" value="tutong"> Daerah Tutong <br>
+  <input type="checkbox" name="kawasan" id="kawasan"value="belait"> Daerah Belait<br>
+    <input type="checkbox" name="kawasan" id="kawasan" value="temburong"> Daerah Temburong<br>
+          </td>
+        </tr>
+       <td> <h3>BAHAGIAN 2 - KETERANGAN MENGENAI *ISTERI/SUAMI </h3>  </td>
+          <tr>
+          <td>13. Nama penuh (huruf besar seperti di dalam kad Pengenalan : </td>
+          <td><input type="text" name="name2" id="name2" maxlength="100" /> (max 100 characters a-z and A-Z)
+          </td>
+        </tr>
+        
+           <tr>
+          <td>14. Umur:</td>
+          <td><input type="number" name="age2" id="age2" max="60" min="18" /> (Min 18 and max 60)
+          </td>
+        </tr>
+        
+           <tr>
+          <td>15. Tarikh Lahir :</td>
+          <td><input type="date" name="birthdate2" id="birthdate2"  > 
+          </td>
+        </tr>
+        
+         <tr>
+          <td>16. Tempat Lahir :</td>
+          <td><input type="text" name="placeofbirth2" id="placeofbirth2" maxlength="100"   /> (max 100 characters a-z and A-Z)
+          </td>
+        </tr>
+        
+          <tr>
+          <td>17. Bilangan Kad Pengenalan :</td>
+          <td><input type="text" name="IC2" id="IC2" pattern="[0-1]{2}-[0-9]{6}"  /> (00-000000)
+          </td>
+        </tr>
+        
+          <tr>
+          <td>18. Warna :</td>
+          <td><input type="text" name="ICcolor2" id="ICcolor2" maxlength="30"  /> (max 30 characters a-z and A-Z)
+          </td>
+        </tr>
+        
+         <tr>
+          <td>19 . Bangsa :</td>
+          <td><input type="text" name="nationality2" id="nationality2" maxlength="30"  /> (max 30 characters a-z and A-Z)
+          </td>
+        </tr>
+        
+          <tr>
+          <td>20. Perkhidmatan :</td>
+         
+        </tr>
+        
+         <tr>
+          <td>20a. Kerajaan : <input type="checkbox" name="kerajaan2" id="kerajaan2" value="swasta"></td>
+         
+        </tr>
+        
+        <tr>
+          <td>Majikan :</td>
+          <td><input type="text" name="majikan3" id="majikan3" maxlength="100" /> (max 100 characters a-z and A-Z)
+          </td>
+        </tr>
+        
+        <tr>
+          <td>Jawatan :</td>
+          <td><input type="text" name="jawatan4" id="jawatan4" maxlength="100" /> (max 100 characters a-z and A-Z)
+          </td>
+        </tr>
+        
+        <tr>
+          <td>Bahagian :</td>
+          <td><input type="radio" name="bahagian3" id="bahagian3" value="2" checked> II<br>
+  <input type="radio" name="bahagian3" id="bahagian3" value="3"> III<br>
+  <input type="radio" name="bahagian3" id="bahagian3" value="4"> IV <br>
+  <input type="radio" name="bahagian3" id="bahagian3" value="5"> V <br>
+          </td>
+        </tr>
+        
+        <tr>
+          <td>Bahagian (Section) :</td>
+          <td><input type="text" name="bahagian4" id="bahagian4" maxlength="100" /> (max 100 characters a-z and A-Z)
+          </td>
+        </tr>
+        
+         <tr>
+          <td>Gaji sebulan/sehari :</td>
+          <td><input type="number" name="gaji5" id="gaji5" min="1" /> (Min 1)
+          </td>
+        </tr>
+        
+        <tr>
+          <td>Tarikh mula berkhidmat :</td>
+          <td><input type="date" name="berkhidmatdate3" id="berkhidmatdate3"> 
+          </td>
+        </tr>
+        
+         <tr>
+          <td>20b. Swasta : <input type="checkbox" name="swasta2" id="swasta2" value="swasta"></td>
+          <td><input type="text" name="swasta2" id="swasta2" maxlength="100" /> (max 100 characters a-z and A-Z)
+          </td>
+        </tr>
+        
+        <tr>
+          <td>Majikan :</td>
+          <td><input type="text" name="majikan4" id="majikan4" maxlength="100" /> (max 100 characters a-z and A-Z)
+          </td>
+        </tr>
+        
+        <tr>
+          <td>Jawatan :</td>
+          <td><input type="text" name="jawatan5" id="jawatan5" maxlength="100" /> (max 100 characters a-z and A-Z)
+          </td>
+        </tr>
+        
+        <tr>
+          <td>Tarikh mula berkhidmat :</td>
+          <td><input type="date" name="berkhidmatdate4" id="berkhidmatdate4"> 
+          </td>
+        </tr>
+        
+           <tr>
+          <td>Gaji sebulan/sehari :</td>
+          <td><input type="number" name="gaji6" id="gaji6" min="1" /> (Min 1)
+          </td>
+        </tr>
+        
+         <tr>
+          <td>20c. Sendiri : <input type="checkbox" name="kerjasendiri2" id="kerjasendiri2" value="sendiri"></td>
+          <td><input type="text" name="kerjasendiri2" id="kerjasendiri2" maxlength="100" />(max 100 characters a-z and A-Z)
+          </td>
+        </tr>
+        
+        <tr>
+          <td>Jenis Pekerjaan :</td>
+          <td><input type="text" name="pekerjaan2" id="pekerjaan2" maxlength="100" /> (max 100 characters a-z and A-Z)
+          </td>
+        </tr>
+        
+          <tr>
+          <td>Anggaran pendapatan purata sebulan :</td>
+          <td><input type="number" name="gaji7" id="gaji7" min="1" /> (Min)
+          </td>
+        </tr>
+        
+          <tr>
+          <td>20d. Lain-Lain : <input type="checkbox" name="lainlain2" id="lainlain2" value="lain"></td>
+          <td><input type="text" name="lainlain2" id="lainlain2" maxlength="100" /> (max 100 characters a-z and A-Z)
+          </td>
+        </tr>
+        
+          <tr>
+          <td>Jawatan:</td>
+          <td><input type="text" name="jawatan6" id="jawatan6" maxlength="100" /> (max 100 characters a-z and A-Z)
+          </td>
+        </tr>
+        
+        
+          <tr>
+          <td>Pendapatan sebulan (anggaran purata)</td>
+          <td><input type="number" name="gaji8" id="gaji8" min="1" /> 
+          </td>
+        </tr>
+        
+        <td> <h3> BAHAGIAN 3 - KETERANGAN MENGENAI AYAH  </h3></td>
+           <tr>
+          <td>21. Nama penuh (huruf besar seperti di dalam kad Pengenalan :</td>
+          <td><input type="text" name="name3" id="name3" maxlength="100"  /> (max 100 characters a-z and A-Z)
+          </td>
+        </tr>
+        
+           <tr>
+          <td>22. Umur:</td>
+          <td><input type="number" name="age3" id="age3" maxlength="99" min="18"   /> (Min 18)
+          </td>
+        </tr>
+        
+           <tr>
+          <td>23. Tarikh Lahir :</td>
+          <td><input type="date" name="birthdate3" id="birthdate3"   > 
+          </td>
+        </tr>
+        
+         <tr>
+          <td>24. Tempat Lahir :</td>
+          <td><input type="text" name="placeofbirth3" id="placeofbirth3" maxlength="100"   /> (max 100 characters a-z and A-Z)
+          </td>
+        </tr>
+        
+          <tr>
+          <td>25. Bilangan Kad Pengenalan :</td>
+          <td><input type="text" name="IC3" id="IC3"  pattern="[0-1]{2}-[0-9]{6}"  /> (00-000000)
+          </td>
+        </tr>
+        
+          <tr>
+          <td>26. Warna :</td>
+          <td><input type="text" name="ICcolor3" id="ICcolor3" maxlength="30"  /> (max 100 characters a-z and A-Z)
+          </td>
+        </tr>
+        
+        <td> <h3> BAHAGIAN 4 - KETERANGAN MENGENAI TANGGUNGAN </h3> </td>
+        
+           <tr>
+          <td>27. Bilangan anak dalam tanggungan</td>
+          <td><input type="number" name="anak" id="anak" min="0" max="30"  /> (max 30)
+          </td>
+        </tr>
+        
+         <td> <h3> BAHAGIAN 5 - KETERANGAN MENGENAI TANAH </h3> </td>
+        
+        <tr>
+          <td>28. Adakah pemohon dan isteri/suami memiliki Tanah Lesen Tumpang Sementara (LTS)</td>
+          <td><input type="text" name="tanah" id="tanah" maxlength="30"  /> (max 100 characters a-z and A-Z)
+          </td>
+        </tr>
+        
+        <tr>
+          <td>Bilangan LTS:</td>
+          <td><input type="text" name="LTS" id="LTS" maxlength="30" /> (max 100 characters a-z and A-Z)
+          </td>
+        </tr>
+        
+         <tr>
+          <td>Bertempat :</td>
+          <td><input type="text" name="tanahtempat" id="tanahtempat" maxlength="30" /> (max 100 characters a-z and A-Z)
+          </td>
+        </tr>  
+          
+        
+    
+ 
+         <td> <h3>BAHAGIAN 6 - PENGAKUAN PEMOHON </h3> </td>
+          
+          
+          <tr>
+          <td>Tarikh :</td>
+          <td><input type="date" name="tarikh" id="tarikh" > 
+          </td>
+        </tr> 
+        
+      
+           
+         
+         
+           </table> 
+           <div id="canvas" align="justify">
+      <canvas class="roundCorners" id="newSignature"
+      style="position: relative; margin: auto; padding: 10px; display: block; border: 1px solid #c4caac;"></canvas>
+    </div>
+    <script>signatureCapture();</script>
+    <button type="button" onclick="signatureSave()" style="position: relative; margin: auto; padding: 10px; display: block;" >Save signature</button>
+    <button type="button" onclick="signatureClear()" style="position: relative; margin: auto; padding: 10px; display: block;">Clear signature</button>
+    </br>
+    Saved Image
+    </br>
+    <img id="saveSignature" alt="Saved image png"/>
+        
+        
+          <br>
+          <p>Click here to submit:<p>
+          <input type="submit" name="submit" value="Submit form">
+         
+         </form>
+       
+       <!-- Different Code -->
+       <form >
+  <fieldset>
+    <legend>Legend</legend>
+    <div class="form-group row">
+      <label for="staticEmail" class="col-sm-2 col-form-label">Email</label>
+      <div class="col-sm-10">
+        <input type="text" readonly="" class="form-control-plaintext" id="staticEmail" value="email@example.com">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="exampleInputEmail1">Email address</label>
+      <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+      <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+    </div>
+    <div class="form-group">
+      <label for="exampleInputPassword1">Password</label>
+      <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+    </div>
+    <div class="form-group">
+      <label for="exampleSelect1">Example select</label>
+      <select class="form-control" id="exampleSelect1">
+        <option>1</option>
+        <option>2</option>
+        <option>3</option>
+        <option>4</option>
+        <option>5</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="exampleSelect2">Example multiple select</label>
+      <select multiple="" class="form-control" id="exampleSelect2">
+        <option>1</option>
+        <option>2</option>
+        <option>3</option>
+        <option>4</option>
+        <option>5</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="exampleTextarea">Example textarea</label>
+      <textarea class="form-control" id="exampleTextarea" rows="3"></textarea>
+    </div>
+    <div class="form-group">
+      <label for="exampleInputFile">File input</label>
+      <input type="file" class="form-control-file" id="exampleInputFile" aria-describedby="fileHelp">
+      <small id="fileHelp" class="form-text text-muted">This is some placeholder block-level help text for the above input. It's a bit lighter and easily wraps to a new line.</small>
+    </div>
+    <fieldset class="form-group">
+      <legend>Radio buttons</legend>
+      <div class="form-check">
+        <label class="form-check-label">
+          <input type="radio" class="form-check-input" name="optionsRadios" id="optionsRadios1" value="option1" checked="">
+          Option one is this and that—be sure to include why it's great
+        </label>
+      </div>
+      <div class="form-check">
+      <label class="form-check-label">
+          <input type="radio" class="form-check-input" name="optionsRadios" id="optionsRadios2" value="option2">
+          Option two can be something else and selecting it will deselect option one
+        </label>
+      </div>
+      <div class="form-check disabled">
+      <label class="form-check-label">
+          <input type="radio" class="form-check-input" name="optionsRadios" id="optionsRadios3" value="option3" disabled="">
+          Option three is disabled
+        </label>
+      </div>
+    </fieldset>
+    <fieldset class="form-group">
+      <legend>Checkboxes</legend>
+      <div class="form-check">
+        <label class="form-check-label">
+          <input class="form-check-input" type="checkbox" value="" checked="">
+          Option one is this and that—be sure to include why it's great
+        </label>
+      </div>
+      <div class="form-check disabled">
+        <label class="form-check-label">
+          <input class="form-check-input" type="checkbox" value="" disabled="">
+          Option two is disabled
+        </label>
+      </div>
+    </fieldset>
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </fieldset>
+</form> 
+     
+        
+   
+    
+        
+      
+    
+</body>
+</html>
